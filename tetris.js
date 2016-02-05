@@ -68,10 +68,9 @@ Piece.prototype.descend = function () {
 
   var interval = setInterval(function () {
 
-        piece .top += pieceSize;
-        //this.collisionCheck();
+        piece.top += pieceSize;
 
-        if (piece.top === gameBoardHeight /*|| this.collided*/) {
+        if (piece.top === gameBoardHeight || piece.collisionCheck()) {
             piece.reachedBottom = true;
             clearInterval(interval);
             dropNewPiece();
@@ -86,8 +85,7 @@ Piece.prototype.descend = function () {
 
 Piece.prototype.moveLeft = function () {
   this.left = this.left - pieceSize;
-  //var collision = collisionCheck(top,left);
-  if(this.left >= 0 && this.reachedBottom === false /*&& collision === false*/){
+  if(this.left >= 0 && this.reachedBottom === false && !this.collisionCheck()){
       this.element.style.left = this.left + 'px';
   }
   else{
@@ -97,8 +95,7 @@ Piece.prototype.moveLeft = function () {
 
 Piece.prototype.moveRight = function () {
   this.left = this.left + pieceSize;
-  //var collision = collisionCheck(top,left);
-  if(this.left < gameBoardWidth && this.reachedBottom === false /*&& collision === false*/){
+  if(this.left < gameBoardWidth && this.reachedBottom === false && !this.collisionCheck()){
       this.element.style.left = this.left + 'px';
   }
   else{
@@ -107,82 +104,14 @@ Piece.prototype.moveRight = function () {
 }
 
 Piece.prototype.collisionCheck = function () {
+  var existingPieces = document.getElementsByClassName('piece');
 
+  for(i=0; i < existingPieces.length; i++){
+      if(this.top === existingPieces[i].offsetTop && this.left === existingPieces[i].offsetLeft){
+          console.log('met other piece');
+          return true;
+      }
+  }
+
+  return false;
 }
-
-/*
-
-function createSquare (top,left) {
-
-    var square = document.createElement('div');
-
-    square.left = left;
-    square.top = top;
-    square.reachedBottom = false;
-
-    square.style.width = pieceSize + 'px';
-    square.style.height = pieceSize + 'px';
-    square.className = 'square';
-    square.style.left = left + 'px';
-    document.getElementById('gameboard').appendChild(square);
-
-    return square;
-
-}
-
-
-function createPiece (top,left) {
-
-    var piece = document.createElement('div');
-
-    piece.reachedBottom = false;
-    piece.style.width = pieceSize + 'px';
-    piece.style.height = pieceSize + 'px';
-    piece.className = 'piece';
-    piece.style.left = left + 'px';
-
-    piece.descend = function () {
-
-        var interval = setInterval(function () {
-
-              top += pieceSize;
-              var collision = collisionCheck(top, left);
-
-              if (top === gameBoardHeight || collision === true) {
-                  piece.reachedBottom = true;
-                  clearInterval(interval);
-                  dropNewPiece();
-                  return;
-              }
-
-              piece.style.top = top + 'px';
-
-        }, descendSpeed);
-    }
-
-    piece.moveRight = function() {
-        left = left + pieceSize;
-        var collision = collisionCheck(top,left);
-        if(left < gameBoardWidth && piece.reachedBottom === false && collision === false){
-            piece.style.left = left + 'px';
-        }
-        else{
-            left = left - pieceSize;
-        }
-    }
-
-    piece.moveLeft = function() {
-        left = left - pieceSize;
-        var collision = collisionCheck(top,left);
-        if(left >= 0 && piece.reachedBottom === false && collision === false){
-            piece.style.left = left + 'px';
-        }
-        else{
-            left = left + pieceSize;
-        }
-    }
-
-    document.getElementById('gameboard').appendChild(piece);
-    return piece;
-}
-*/
