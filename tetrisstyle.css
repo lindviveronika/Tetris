@@ -6,7 +6,7 @@
     position: relative;
 }
 
-.square{
+.piece{
     background-color: blue;
     position: absolute;
 }
