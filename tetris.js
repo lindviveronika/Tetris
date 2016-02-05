@@ -14,20 +14,6 @@ window.onload = function () {
 
 };
 
-function collisionCheck(top,left) {
-    console.log(top);
-    var existingPieces = document.getElementsByClassName('piece');
-
-    for(i=0; i < existingPieces.length; i++){
-        if(top === existingPieces[i].offsetTop && left === existingPieces[i].offsetLeft){
-            console.log('met other piece');
-            return true;
-        }
-    }
-
-    return false;
-}
-
 function dropNewPiece () {
 
     var piece;
@@ -50,8 +36,8 @@ function Piece (top,left) {
   this.left = left;
   this.collided = false;
   this.reachedBottom = false;
-  this.element = document.createElement('div');
 
+  this.element = document.createElement('div');
   this.element.style.width = pieceSize + 'px';
   this.element.style.height = pieceSize + 'px';
   this.element.className = 'piece';
