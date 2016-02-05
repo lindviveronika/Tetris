@@ -85,7 +85,14 @@ Piece.prototype.descend = function () {
 }
 
 Piece.prototype.moveLeft = function () {
-
+  this.left = this.left - pieceSize;
+  //var collision = collisionCheck(top,left);
+  if(this.left >= 0 && this.reachedBottom === false /*&& collision === false*/){
+      this.element.style.left = this.left + 'px';
+  }
+  else{
+      this.left = this.left + pieceSize;
+  }
 }
 
 Piece.prototype.moveRight = function () {
