@@ -96,7 +96,14 @@ Piece.prototype.moveLeft = function () {
 }
 
 Piece.prototype.moveRight = function () {
-
+  this.left = this.left + pieceSize;
+  //var collision = collisionCheck(top,left);
+  if(this.left < gameBoardWidth && this.reachedBottom === false /*&& collision === false*/){
+      this.element.style.left = this.left + 'px';
+  }
+  else{
+      this.left = this.left - pieceSize;
+  }
 }
 
 Piece.prototype.collisionCheck = function () {
