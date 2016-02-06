@@ -1,14 +1,31 @@
-$gameboardsize: 450px;
+$pieceSize: 100px;
+$gameboardHeight: $pieceSize * 5;
+$gameboardWidth: $pieceSize * 2.5;
+$startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
 
-#gameboard{
+@mixin piece($color) {
+  position: absolute;
+  overflow: hidden;
+  height: $pieceSize;
+  width: $pieceSize;
+  left: $startPositionLeft;
+  top: -$pieceSize;
+  .colored{
+    background-color: $color;
+  }
+  div {
+      float: left;
+  }
+}
+
+#gameboard {
     border: 2px solid black;
-    width: $gameboardsize;
-    height: $gameboardsize;
+    width: $gameboardWidth;
+    height: $gameboardHeight;
     margin: auto;
     position: relative;
 }
 
-.piece{
-    background-color: blue;
-    position: absolute;
+.s-shape {
+    @include piece(blue);
 }
