@@ -1,7 +1,9 @@
+$gameboardsize: 450px;
+
 #gameboard{
     border: 2px solid black;
-    width: 450px;
-    height: 450px;
+    width: $gameboardsize;
+    height: $gameboardsize;
     margin: auto;
     position: relative;
 }
