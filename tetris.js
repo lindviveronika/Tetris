@@ -43,7 +43,7 @@ function gameOver () {
 
 }
 
-var cumulativeOffset = function(element) {
+var absolutePosition = function(element) {
     var top = 0, left = 0;
     do {
         top += element.offsetTop  || 0;
@@ -58,7 +58,7 @@ var cumulativeOffset = function(element) {
 };
 
 function collision (top, left, existingElem) {
-  if (top === cumulativeOffset(existingElem).top && left === cumulativeOffset(existingElem).left){
+  if (top === absolutePosition(existingElem).top && left === absolutePosition(existingElem).left){
     return true;
   }
   else {
@@ -128,7 +128,7 @@ Piece.prototype.moveLeft = function () {
   var reachedLeft = false;
   for(i = 0; i < innerPieces.length; i++){
     if(innerPieces[i].className === 'colored'){
-      if(cumulativeOffset(innerPieces[i]).left === cumulativeOffset(gameboard).left){
+      if(absolutePosition(innerPieces[i]).left === absolutePosition(gameboard).left){
         reachedLeft = true;
       }
     }
@@ -145,7 +145,7 @@ Piece.prototype.moveRight = function () {
   var reachedRight = false;
   for(i = 0; i < innerPieces.length; i++){
     if(innerPieces[i].className === 'colored'){
-      if(cumulativeOffset(innerPieces[i]).left + innerPieceSize === cumulativeOffset(gameboard).left + gameBoardWidth){
+      if(absolutePosition(innerPieces[i]).left + innerPieceSize === absolutePosition(gameboard).left + gameBoardWidth){
         reachedRight = true;
       }
     }
@@ -157,13 +157,14 @@ Piece.prototype.moveRight = function () {
 }
 
 Piece.prototype.collisionCheck = function (movetop,moveleft) {
-  var existingPieces = document.getElementsByClassName('colored');
-  var innerPieces = this.element.childNodes;
-  for(i = 0; i < innerPieces.length; i++){
-    if(innerPieces[i].className === 'colored'){
-      for(j = 0; j < existingPieces.length; j++){
-        if(!innerPieces[i].parentNode.isSameNode(existingPieces[j].parentNode) && !innerPieces[i].isSameNode(existingPieces[j])){
-          if(collision(cumulativeOffset(innerPieces[i]).top + movetop, cumulativeOffset(innerPieces[i]).left + moveleft, existingPieces[j])){
+  var existing = document.getElementsByClassName('colored');
+  var newpieces = this.element.childNodes;
+
+  for(i = 0; i < newpieces.length; i++){
+    if(newpieces[i].className === 'colored'){
+      for(j = 0; j < existing.length; j++){
+        if(!newpieces[i].parentNode.isSameNode(existing[j].parentNode) && !newpieces[i].isSameNode(existing[j])){
+          if(collision(absolutePosition(newpieces[i]).top + movetop, absolutePosition(newpieces[i]).left + moveleft, existing[j])){
             return true;
           }
         }
