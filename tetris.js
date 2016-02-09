@@ -86,9 +86,6 @@ function Piece (top,left) {
   this.top = -pieceSize;
   this.left = gameBoardWidth/2 - pieceSize/2;
 
-  this.collided = false;
-  this.reachedBottom = false;
-
   this.element = createPieceElement();
   this.element.className = 'piece';
 }
@@ -101,14 +98,13 @@ Piece.prototype.descend = function () {
 
   var interval = setInterval(function () {
 
-        if (piece.top + pieceSize === gameBoardHeight || piece.collisionCheck(innerPieceSize,0)) {
+        if (piece.reachedBottom() || piece.collisionCheck(innerPieceSize,0)) {
             clearInterval(interval);
 
             if (piece.top === 0) {
               gameOver();
             }
             else {
-              piece.reachedBottom = true;
               dropNewPiece();
             }
 
@@ -123,30 +119,42 @@ Piece.prototype.descend = function () {
 }
 
 Piece.prototype.moveLeft = function () {
-  if(!this.reachedLeft() && this.reachedBottom === false && !this.collisionCheck(0, -innerPieceSize)){
+
+  if(!this.reachedLeft() && this.reachedBottom() === false && !this.collisionCheck(0, -innerPieceSize)){
+
       this.left = this.left - innerPieceSize;
       this.element.style.left = this.left + 'px';
+
   }
 }
 
 Piece.prototype.moveRight = function () {
-  if(!this.reachedRight() && this.reachedBottom === false && !this.collisionCheck(0, innerPieceSize)){
+
+  if(!this.reachedRight() && this.reachedBottom() === false && !this.collisionCheck(0, innerPieceSize)){
+
       this.left = this.left + innerPieceSize;
       this.element.style.left = this.left + 'px';
+
   }
 }
 
 Piece.prototype.collisionCheck = function (movetop,moveleft) {
-  var existing = document.getElementsByClassName('colored');
-  var newpieces = this.element.childNodes;
 
-  for(i = 0; i < newpieces.length; i++){
-    if(newpieces[i].className === 'colored'){
+  var existing = document.getElementsByClassName('colored');
+  var childnodes = this.element.childNodes;
+
+  for(i = 0; i < childnodes.length; i++){
+
+    if(childnodes[i].className === 'colored'){
+
       for(j = 0; j < existing.length; j++){
-        if(!newpieces[i].parentNode.isSameNode(existing[j].parentNode) && !newpieces[i].isSameNode(existing[j])){
-          if(collision(newpieces[i], existing[j], movetop, moveleft)){
+
+        if(!childnodes[i].parentNode.isSameNode(existing[j].parentNode) && !childnodes[i].isSameNode(existing[j])){
+
+          if(collision(childnodes[i], existing[j], movetop, moveleft)){
             return true;
           }
+
         }
       }
     }
@@ -154,28 +162,55 @@ Piece.prototype.collisionCheck = function (movetop,moveleft) {
   return false;
 }
 
-Piece.prototype.reachedRight = function () {
+Piece.prototype.reachedBottom = function () {
+
   var childnodes = this.element.childNodes;
   var gameboard = document.getElementById('gameboard');
+
   for(i = 0; i < childnodes.length; i++){
+
     if(childnodes[i].className === 'colored'){
+
+      if(absolutePosition(childnodes[i]).top + innerPieceSize === absolutePosition(gameboard).top + gameBoardHeight){
+        return true;
+      }
+
+    }
+  }
+  return false;
+}
+
+Piece.prototype.reachedRight = function () {
+
+  var childnodes = this.element.childNodes;
+  var gameboard = document.getElementById('gameboard');
+
+  for(i = 0; i < childnodes.length; i++){
+
+    if(childnodes[i].className === 'colored'){
+
       if(absolutePosition(childnodes[i]).left + innerPieceSize === absolutePosition(gameboard).left + gameBoardWidth){
         return true;
       }
+
     }
   }
   return false;
 }
 
 Piece.prototype.reachedLeft = function () {
+
   var childnodes = this.element.childNodes;
   var gameboard = document.getElementById('gameboard');
-  var reachedLeft = false;
+
   for(i = 0; i < childnodes.length; i++){
+
     if(childnodes[i].className === 'colored'){
+
       if(absolutePosition(childnodes[i]).left === absolutePosition(gameboard).left){
         return true;
       }
+
     }
   }
   return false;
