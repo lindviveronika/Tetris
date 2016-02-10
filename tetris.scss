@@ -14,18 +14,27 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
     background-color: $color;
   }
   div {
-      float: left;
+    float: left;
+    height: $pieceSize/4;
+    width: $pieceSize/4;
   }
 }
 
-#gameboard {
-    border: 2px solid black;
-    width: $gameboardWidth;
-    height: $gameboardHeight;
-    margin: auto;
-    position: relative;
+.s-shape {
+  @include piece(blue);
 }
 
-.s-shape {
-    @include piece(blue);
+#gameboard {
+  border: 2px solid black;
+  width: $gameboardWidth;
+  height: $gameboardHeight;
+  margin: auto;
+  position: relative;
+}
+
+#startbutton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 30px;
 }

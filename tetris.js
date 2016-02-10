@@ -43,7 +43,7 @@ function gameOver () {
 
 }
 
-var absolutePosition = function(element) {
+function absolutePosition (element) {
     var top = 0, left = 0;
     do {
         top += element.offsetTop  || 0;
@@ -66,28 +66,38 @@ function collision (newElement, existingElem, movetop, moveleft) {
   }
 }
 
-function createPieceElement () {
-  var pieceContainer = document.createElement('div');
-  var innerPiece;
-  for(var i = 1; i <= 16; i++){
-    innerPiece = document.createElement('div');
-    innerPiece.id = i;
-    innerPiece.style.height = pieceSize/4 + 'px';
-    innerPiece.style.width = pieceSize/4 + 'px';
-    pieceContainer.appendChild(innerPiece);
-    if(i === 7 || i === 8 || i === 10 || i === 11){
-      innerPiece.className = 'colored'
+function reachedLeftSide (element) {
+  var childnodes = this.element.childNodes;
+  var gameboard = document.getElementById('gameboard');
+
+  for(i = 0; i < childnodes.length; i++){
+
+    if(childnodes[i].className === 'colored'){
+
+      if(absolutePosition(childnodes[i]).left === absolutePosition(gameboard).left){
+        return true;
+      }
+
     }
   }
-  return pieceContainer;
+  return false;
 }
+
 
 function Piece (top,left) {
   this.top = -pieceSize;
   this.left = gameBoardWidth/2 - pieceSize/2;
 
-  this.element = createPieceElement();
+  var s = new SPiece();
+
+  console.log(s);
+
+  this.element = drawPiece(s.state1);
   this.element.className = 'piece';
+}
+
+function getRandomPiece () {
+
 }
 
 Piece.prototype.descend = function () {
@@ -101,7 +111,7 @@ Piece.prototype.descend = function () {
         if (piece.reachedBottom() || piece.collisionCheck(innerPieceSize,0)) {
             clearInterval(interval);
 
-            if (piece.top === 0) {
+            if (piece.reachedTop()) {
               gameOver();
             }
             else {
@@ -162,6 +172,24 @@ Piece.prototype.collisionCheck = function (movetop,moveleft) {
   return false;
 }
 
+Piece.prototype.reachedTop = function () {
+
+  var childnodes = this.element.childNodes;
+  var gameboard = document.getElementById('gameboard');
+
+  for(i = 0; i < childnodes.length; i++){
+
+    if(childnodes[i].className === 'colored'){
+
+      if(absolutePosition(childnodes[i]).top === absolutePosition(gameboard).top){
+        return true;
+      }
+
+    }
+  }
+  return false;
+}
+
 Piece.prototype.reachedBottom = function () {
 
   var childnodes = this.element.childNodes;
@@ -214,4 +242,41 @@ Piece.prototype.reachedLeft = function () {
     }
   }
   return false;
+}
+
+function SPiece () {
+
+  this.state1 = [ [0, 0, 0, 0],
+                  [0, 0, 1, 1],
+                  [0, 1, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state2 = [ [0, 0, 1, 0],
+                  [0, 0, 1, 1],
+                  [0, 0, 0, 1],
+                  [0, 0, 0, 0] ];
+
+  this.states  = [this.state1, this.state2];
+
+}
+
+function drawPiece (state) {
+
+  var pieceContainer = document.createElement('div');
+  var innerPiece;
+
+  for(var i = 0; i < state.length; i++){
+    for(var j = 0; j < state[i].length; j++){
+
+      innerPiece = document.createElement('div');
+      pieceContainer.appendChild(innerPiece);
+
+      if(state[i][j] === 1){
+        innerPiece.className = 'colored'
+      }
+    }
+  }
+
+  return pieceContainer;
+
 }
