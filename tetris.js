@@ -58,8 +58,9 @@ function absolutePosition (element) {
     };
 };
 
-function collision (newElement, existingElem, movetop, moveleft) {
-  if (absolutePosition(newElement).top + movetop === absolutePosition(existingElem).top && absolutePosition(newElement).left + moveleft === absolutePosition(existingElem).left){
+function collision (newElement, existingElem) {
+
+  if (absolutePosition(newElement).top === absolutePosition(existingElem).top && absolutePosition(newElement).left === absolutePosition(existingElem).left){
     return true;
   }
   else {
@@ -67,12 +68,50 @@ function collision (newElement, existingElem, movetop, moveleft) {
   }
 }
 
+function collisionCheck (element) {
+
+  var gameboard = document.getElementById('gameboard');
+  var existing = document.getElementsByClassName('colored fixed');
+  var childnodes = element.childNodes;
+
+  for(i = 0; i < childnodes.length; i++){
+
+    if(childnodes[i].className === 'colored'){
+
+      //Outside bottom
+      if(absolutePosition(childnodes[i]).top > absolutePosition(gameboard).top + gameBoardHeight - innerPieceSize){
+        return 'bottom';
+      }
+
+      //Outside right side
+      if(absolutePosition(childnodes[i]).left > absolutePosition(gameboard).left + gameBoardWidth - innerPieceSize){
+        return 'right';
+      }
+
+      //Outside left side
+      if(absolutePosition(childnodes[i]).left < absolutePosition(gameboard).left){
+        return 'left';
+      }
+
+      //Collision with other piece
+      for(j = 0; j < existing.length; j++){
+
+        if(!childnodes[i].parentNode.isSameNode(existing[j].parentNode) && !childnodes[i].isSameNode(existing[j])){
+
+          if(collision(childnodes[i], existing[j])){
+            return 'bottom';
+          }
+
+        }
+      }
+    }
+  }
+  return false;
+}
 
 function getRandomPiece () {
 
   var rand = Math.floor(Math.random() * 7) + 1;
-
-  console.log(rand);
 
   switch (rand) {
     case 1:
@@ -136,21 +175,33 @@ Piece.prototype.descend = function () {
 
   var interval = setInterval(function () {
 
-        if (piece.reachedBottom() || piece.collisionCheck(innerPieceSize,0)) {
-            clearInterval(interval);
+    var clone = piece.element.cloneNode(true);
+    document.getElementById('gameboard').appendChild(clone);
 
-            if (piece.reachedTop()) {
-              gameOver();
-            }
-            else {
-              dropNewPiece();
-            }
+    clone.style.visibility = 'hidden';
+    clone.style.top = piece.top + innerPieceSize + 'px';
+    clone.style.left = piece.left + 'px';
 
-            return;
+    if (collisionCheck(clone) === 'bottom') {
+        clearInterval(interval);
+
+        var childnodes = piece.element.childNodes;
+        for(var i = 0; i < childnodes.length; i++){
+          childnodes[i].className += ' fixed';
         }
 
-        piece.top += innerPieceSize;
-        piece.element.style.top = piece .top + 'px';
+        if (piece.reachedTop()) {
+          gameOver();
+        }
+        else {
+          dropNewPiece();
+        }
+
+        return;
+    }
+
+    piece.top += innerPieceSize;
+    piece.element.style.top = piece .top + 'px';
 
   }, descendSpeed);
 
@@ -158,7 +209,14 @@ Piece.prototype.descend = function () {
 
 Piece.prototype.moveLeft = function () {
 
-  if(!this.reachedLeft() && this.reachedBottom() === false && !this.collisionCheck(0, -innerPieceSize)){
+  var clone = this.element.cloneNode(true);
+  document.getElementById('gameboard').appendChild(clone);
+
+  clone.style.visibility = 'hidden';
+  clone.style.top = this.top + 'px';
+  clone.style.left = this.left - innerPieceSize + 'px';
+
+  if(!collisionCheck(clone)){
 
       this.left = this.left - innerPieceSize;
       this.element.style.left = this.left + 'px';
@@ -168,7 +226,14 @@ Piece.prototype.moveLeft = function () {
 
 Piece.prototype.moveRight = function () {
 
-  if(!this.reachedRight() && this.reachedBottom() === false && !this.collisionCheck(0, innerPieceSize)){
+  var clone = this.element.cloneNode(true);
+  document.getElementById('gameboard').appendChild(clone);
+
+  clone.style.visibility = 'hidden';
+  clone.style.top = this.top + 'px';
+  clone.style.left = this.left + innerPieceSize + 'px';
+
+  if(!collisionCheck(clone)){
 
       this.left = this.left + innerPieceSize;
       this.element.style.left = this.left + 'px';
@@ -177,6 +242,7 @@ Piece.prototype.moveRight = function () {
 }
 
 Piece.prototype.rotate = function () {
+  var prevState = this.curState;
   if(this.curState < this.states.length){
     this.curState++;
   }
@@ -184,41 +250,25 @@ Piece.prototype.rotate = function () {
     this.curState = 1;
   }
 
-  var className = this.element.className;
-  
-  this.element.remove();
-  this.element = this.draw();
+  var clone = this.draw();
+  document.getElementById('gameboard').appendChild(clone);
 
-  this.element.className = className;
-  this.element.style.left = this.left + 'px';
-  this.element.style.top = this.top + 'px';
+  clone.style.visibility = 'hidden';
+  clone.style.top = this.top + 'px';
+  clone.style.left = this.left + 'px';
+  clone.className = this.element.className;
 
-  document.getElementById('gameboard').appendChild(this.element);
-
-}
-
-Piece.prototype.collisionCheck = function (movetop,moveleft) {
-
-  var existing = document.getElementsByClassName('colored');
-  var childnodes = this.element.childNodes;
-
-  for(i = 0; i < childnodes.length; i++){
-
-    if(childnodes[i].className === 'colored'){
-
-      for(j = 0; j < existing.length; j++){
-
-        if(!childnodes[i].parentNode.isSameNode(existing[j].parentNode) && !childnodes[i].isSameNode(existing[j])){
-
-          if(collision(childnodes[i], existing[j], movetop, moveleft)){
-            return true;
-          }
-
-        }
-      }
-    }
+  console.log(collisionCheck(clone));
+  if(!collisionCheck(clone)){
+    this.element.remove();
+    this.element = clone;
+    this.element.style.visibility = 'visible';
   }
-  return false;
+  else{
+    clone.remove();
+    this.curState = prevState;
+  }
+
 }
 
 Piece.prototype.reachedTop = function () {
@@ -233,61 +283,6 @@ Piece.prototype.reachedTop = function () {
       if(absolutePosition(childnodes[i]).top === absolutePosition(gameboard).top){
         return true;
       }
-
-    }
-  }
-  return false;
-}
-
-Piece.prototype.reachedBottom = function () {
-
-  var childnodes = this.element.childNodes;
-  var gameboard = document.getElementById('gameboard');
-
-  for(i = 0; i < childnodes.length; i++){
-
-    if(childnodes[i].className === 'colored'){
-
-      if(absolutePosition(childnodes[i]).top + innerPieceSize === absolutePosition(gameboard).top + gameBoardHeight){
-        return true;
-      }
-
-    }
-  }
-  return false;
-}
-
-Piece.prototype.reachedRight = function () {
-
-  var childnodes = this.element.childNodes;
-  var gameboard = document.getElementById('gameboard');
-
-  for(i = 0; i < childnodes.length; i++){
-
-    if(childnodes[i].className === 'colored'){
-
-      if(absolutePosition(childnodes[i]).left + innerPieceSize === absolutePosition(gameboard).left + gameBoardWidth){
-        return true;
-      }
-
-    }
-  }
-  return false;
-}
-
-Piece.prototype.reachedLeft = function () {
-
-  var childnodes = this.element.childNodes;
-  var gameboard = document.getElementById('gameboard');
-
-  for(i = 0; i < childnodes.length; i++){
-
-    if(childnodes[i].className === 'colored'){
-
-      if(absolutePosition(childnodes[i]).left === absolutePosition(gameboard).left){
-        return true;
-      }
-
     }
   }
   return false;
