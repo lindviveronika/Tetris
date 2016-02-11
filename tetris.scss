@@ -20,8 +20,32 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
   }
 }
 
-.s-shape {
+.o-piece {
+  @include piece(yellow);
+}
+
+.i-piece {
+  @include piece(cyan);
+}
+
+.s-piece {
+  @include piece(lime);
+}
+
+.z-piece {
+  @include piece(red);
+}
+
+.l-piece {
+  @include piece(orange);
+}
+
+.j-piece {
   @include piece(blue);
+}
+
+.t-piece {
+  @include piece(purple);
 }
 
 #gameboard {

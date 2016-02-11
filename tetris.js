@@ -17,9 +17,7 @@ window.onload = function () {
 
 function dropNewPiece () {
 
-    var piece;
-    piece = new Piece(0,200);
-    piece.element.className += ' s-shape';
+    var piece = getRandomPiece()
     piece.descend();
 
     window.onkeydown = function(e) {
@@ -28,6 +26,9 @@ function dropNewPiece () {
         }
         if (e.keyCode === 37) {
             piece.moveLeft();
+        }
+        if (e.keyCode === 38) {
+            piece.rotate();
         }
     };
 
@@ -66,37 +67,64 @@ function collision (newElement, existingElem, movetop, moveleft) {
   }
 }
 
-function reachedLeftSide (element) {
-  var childnodes = this.element.childNodes;
-  var gameboard = document.getElementById('gameboard');
 
-  for(i = 0; i < childnodes.length; i++){
+function getRandomPiece () {
 
-    if(childnodes[i].className === 'colored'){
+  var rand = Math.floor(Math.random() * 7) + 1;
 
-      if(absolutePosition(childnodes[i]).left === absolutePosition(gameboard).left){
-        return true;
-      }
+  console.log(rand);
 
-    }
+  switch (rand) {
+    case 1:
+        return new OPiece();
+    case 2:
+        return new IPiece();
+    case 3:
+        return new SPiece();
+    case 4:
+        return new ZPiece();
+    case 5:
+        return new LPiece();
+    case 6:
+        return new JPiece();
+    case 7:
+        return new TPiece();
+      break;
+    default: return new OPiece();
+
   }
-  return false;
 }
 
-
-function Piece (top,left) {
+function Piece (className) {
   this.top = -pieceSize;
   this.left = gameBoardWidth/2 - pieceSize/2;
 
-  var s = new SPiece();
-
-  console.log(s);
-
-  this.element = drawPiece(s.state1);
-  this.element.className = 'piece';
+  this.curState = 1;
+  this.element = this.draw();
+  this.element.className = className;
 }
 
-function getRandomPiece () {
+Piece.prototype.draw = function () {
+
+  var pieceContainer = document.createElement('div');
+
+  var innerPiece;
+
+  var state = this.states[this.curState - 1];
+
+  for(var i = 0; i < state.length; i++){
+    for(var j = 0; j < state[i].length; j++){
+
+      innerPiece = document.createElement('div');
+      pieceContainer.appendChild(innerPiece);
+
+      if(state[i][j] === 1){
+        innerPiece.className = 'colored'
+      }
+    }
+  }
+
+  return pieceContainer;
 
 }
 
@@ -146,6 +174,27 @@ Piece.prototype.moveRight = function () {
       this.element.style.left = this.left + 'px';
 
   }
+}
+
+Piece.prototype.rotate = function () {
+  if(this.curState < this.states.length){
+    this.curState++;
+  }
+  else {
+    this.curState = 1;
+  }
+
+  var className = this.element.className;
+  
+  this.element.remove();
+  this.element = this.draw();
+
+  this.element.className = className;
+  this.element.style.left = this.left + 'px';
+  this.element.style.top = this.top + 'px';
+
+  document.getElementById('gameboard').appendChild(this.element);
+
 }
 
 Piece.prototype.collisionCheck = function (movetop,moveleft) {
@@ -244,6 +293,38 @@ Piece.prototype.reachedLeft = function () {
   return false;
 }
 
+function OPiece () {
+
+  this.state1 = [ [0, 0, 0, 0],
+                  [0, 1, 1, 0],
+                  [0, 1, 1, 0],
+                  [0, 0, 0, 0] ];
+
+
+  this.states  = [this.state1];
+
+  Piece.call(this, 'o-piece');
+
+}
+
+function IPiece () {
+
+  this.state1 = [ [0, 0, 0, 0],
+                  [1, 1, 1, 1],
+                  [0, 0, 0, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state2 = [ [0, 0, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 0] ];
+
+  this.states  = [this.state1, this.state2];
+
+  Piece.call(this, 'i-piece');
+
+}
+
 function SPiece () {
 
   this.state1 = [ [0, 0, 0, 0],
@@ -258,25 +339,120 @@ function SPiece () {
 
   this.states  = [this.state1, this.state2];
 
-}
-
-function drawPiece (state) {
-
-  var pieceContainer = document.createElement('div');
-  var innerPiece;
-
-  for(var i = 0; i < state.length; i++){
-    for(var j = 0; j < state[i].length; j++){
-
-      innerPiece = document.createElement('div');
-      pieceContainer.appendChild(innerPiece);
-
-      if(state[i][j] === 1){
-        innerPiece.className = 'colored'
-      }
-    }
-  }
-
-  return pieceContainer;
+  Piece.call(this, 's-piece');
 
 }
+
+function ZPiece () {
+
+  this.state1 = [ [0, 0, 0, 0],
+                  [0, 1, 1, 0],
+                  [0, 0, 1, 1],
+                  [0, 0, 0, 0] ];
+
+  this.state2 = [ [0, 0, 0, 1],
+                  [0, 0, 1, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.states  = [this.state1, this.state2];
+
+  Piece.call(this, 'z-piece');
+
+}
+
+function LPiece () {
+
+  this.state1 = [ [0, 0, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 1],
+                  [0, 0, 0, 0] ];
+
+  this.state2 = [ [0, 0, 0, 1],
+                  [0, 1, 1, 1],
+                  [0, 0, 0, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state3 = [ [0, 1, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state4 = [ [0, 0, 0, 0],
+                  [0, 1, 1, 1],
+                  [0, 1, 0, 0],
+                  [0, 0, 0, 0] ];
+
+  this.states  = [this.state1, this.state2, this.state3, this.state4];
+
+  Piece.call(this, 'l-piece');
+
+}
+
+function JPiece () {
+
+  this.state1 = [ [0, 0, 1, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state2 = [ [0, 1, 0, 0],
+                  [0, 1, 1, 1],
+                  [0, 0, 0, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state3 = [ [0, 0, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 1, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state4 = [ [0, 0, 0, 0],
+                  [0, 1, 1, 1],
+                  [0, 0, 0, 1],
+                  [0, 0, 0, 0] ];
+
+  this.states  = [this.state1, this.state2, this.state3, this.state4];
+
+  Piece.call(this, 'j-piece');
+
+}
+
+function TPiece () {
+
+  this.state1 = [ [0, 0, 0, 0],
+                  [0, 1, 1, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state2 = [ [0, 0, 1, 0],
+                  [0, 0, 1, 1],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state3 = [ [0, 0, 1, 0],
+                  [0, 1, 1, 1],
+                  [0, 0, 0, 0],
+                  [0, 0, 0, 0] ];
+
+  this.state4 = [ [0, 0, 1, 0],
+                  [0, 1, 1, 0],
+                  [0, 0, 1, 0],
+                  [0, 0, 0, 0] ];
+
+  this.states  = [this.state1, this.state2, this.state3, this.state4];
+
+  Piece.call(this, 't-piece');
+
+}
+
+var inheritsFrom = function (child, parent) {
+    child.prototype = Object.create(parent.prototype);
+};
+
+inheritsFrom(OPiece, Piece);
+inheritsFrom(IPiece, Piece);
+inheritsFrom(SPiece, Piece);
+inheritsFrom(ZPiece, Piece);
+inheritsFrom(LPiece, Piece);
+inheritsFrom(JPiece, Piece);
+inheritsFrom(TPiece, Piece);

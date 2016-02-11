@@ -1,13 +1,97 @@
-.s-shape {
+.o-piece {
   position: absolute;
   overflow: hidden;
   height: 100px;
   width: 100px;
   left: 75px;
   top: -100px; }
-  .s-shape .colored {
+  .o-piece .colored {
+    background-color: yellow; }
+  .o-piece div {
+    float: left;
+    height: 25px;
+    width: 25px; }
+
+.i-piece {
+  position: absolute;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  left: 75px;
+  top: -100px; }
+  .i-piece .colored {
+    background-color: cyan; }
+  .i-piece div {
+    float: left;
+    height: 25px;
+    width: 25px; }
+
+.s-piece {
+  position: absolute;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  left: 75px;
+  top: -100px; }
+  .s-piece .colored {
+    background-color: lime; }
+  .s-piece div {
+    float: left;
+    height: 25px;
+    width: 25px; }
+
+.z-piece {
+  position: absolute;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  left: 75px;
+  top: -100px; }
+  .z-piece .colored {
+    background-color: red; }
+  .z-piece div {
+    float: left;
+    height: 25px;
+    width: 25px; }
+
+.l-piece {
+  position: absolute;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  left: 75px;
+  top: -100px; }
+  .l-piece .colored {
+    background-color: orange; }
+  .l-piece div {
+    float: left;
+    height: 25px;
+    width: 25px; }
+
+.j-piece {
+  position: absolute;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  left: 75px;
+  top: -100px; }
+  .j-piece .colored {
     background-color: blue; }
-  .s-shape div {
+  .j-piece div {
+    float: left;
+    height: 25px;
+    width: 25px; }
+
+.t-piece {
+  position: absolute;
+  overflow: hidden;
+  height: 100px;
+  width: 100px;
+  left: 75px;
+  top: -100px; }
+  .t-piece .colored {
+    background-color: purple; }
+  .t-piece div {
     float: left;
     height: 25px;
     width: 25px; }
