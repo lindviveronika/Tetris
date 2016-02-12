@@ -30,6 +30,9 @@ function dropNewPiece () {
         if (e.keyCode === 38) {
             piece.rotate();
         }
+        if (e.keyCode === 40) {
+            piece.moveDown();
+        }
     };
 
 }
@@ -224,6 +227,19 @@ Piece.prototype.moveRight = function () {
       this.left = this.left + innerPieceSize;
       this.element.style.left = this.left + 'px';
 
+  }
+}
+
+Piece.prototype.moveDown = function () {
+
+  var clone = this.element.cloneNode(true);
+  addClone(clone, this.top + innerPieceSize, this.left);
+
+  if(!collisionCheck(clone)){
+
+    this.top = this.top + innerPieceSize;
+    this.element.style.top = this.top + 'px';
+    
   }
 }
 
