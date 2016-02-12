@@ -17,7 +17,7 @@ window.onload = function () {
 
 function dropNewPiece () {
 
-    var piece = getRandomPiece()
+    var piece = getRandomPiece();
     piece.descend();
 
     window.onkeydown = function(e) {
@@ -58,14 +58,13 @@ function absolutePosition (element) {
     };
 };
 
-function collision (newElement, existingElem) {
+function addClone (clone, top, left) {
 
-  if (absolutePosition(newElement).top === absolutePosition(existingElem).top && absolutePosition(newElement).left === absolutePosition(existingElem).left){
-    return true;
-  }
-  else {
-    return false;
-  }
+  document.getElementById('gameboard').appendChild(clone);
+  clone.style.visibility = 'hidden';
+  clone.style.top = top + 'px';
+  clone.style.left = left + 'px';
+
 }
 
 function collisionCheck (element) {
@@ -98,7 +97,7 @@ function collisionCheck (element) {
 
         if(!childnodes[i].parentNode.isSameNode(existing[j].parentNode) && !childnodes[i].isSameNode(existing[j])){
 
-          if(collision(childnodes[i], existing[j])){
+          if (absolutePosition(childnodes[i]).top === absolutePosition(existing[j]).top && absolutePosition(childnodes[i]).left === absolutePosition(existing[j]).left){
             return 'bottom';
           }
 
@@ -137,7 +136,6 @@ function getRandomPiece () {
 function Piece (className) {
   this.top = -pieceSize;
   this.left = gameBoardWidth/2 - pieceSize/2;
-
   this.curState = 1;
   this.element = this.draw();
   this.element.className = className;
@@ -176,11 +174,7 @@ Piece.prototype.descend = function () {
   var interval = setInterval(function () {
 
     var clone = piece.element.cloneNode(true);
-    document.getElementById('gameboard').appendChild(clone);
-
-    clone.style.visibility = 'hidden';
-    clone.style.top = piece.top + innerPieceSize + 'px';
-    clone.style.left = piece.left + 'px';
+    addClone(clone, piece.top + innerPieceSize, piece.left);
 
     if (collisionCheck(clone) === 'bottom') {
         clearInterval(interval);
@@ -210,11 +204,7 @@ Piece.prototype.descend = function () {
 Piece.prototype.moveLeft = function () {
 
   var clone = this.element.cloneNode(true);
-  document.getElementById('gameboard').appendChild(clone);
-
-  clone.style.visibility = 'hidden';
-  clone.style.top = this.top + 'px';
-  clone.style.left = this.left - innerPieceSize + 'px';
+  addClone(clone, this.top, this.left - innerPieceSize);
 
   if(!collisionCheck(clone)){
 
@@ -227,11 +217,7 @@ Piece.prototype.moveLeft = function () {
 Piece.prototype.moveRight = function () {
 
   var clone = this.element.cloneNode(true);
-  document.getElementById('gameboard').appendChild(clone);
-
-  clone.style.visibility = 'hidden';
-  clone.style.top = this.top + 'px';
-  clone.style.left = this.left + innerPieceSize + 'px';
+  addClone(clone, this.top, this.left + innerPieceSize);
 
   if(!collisionCheck(clone)){
 
@@ -243,6 +229,7 @@ Piece.prototype.moveRight = function () {
 
 Piece.prototype.rotate = function () {
   var prevState = this.curState;
+
   if(this.curState < this.states.length){
     this.curState++;
   }
@@ -251,14 +238,9 @@ Piece.prototype.rotate = function () {
   }
 
   var clone = this.draw();
-  document.getElementById('gameboard').appendChild(clone);
-
-  clone.style.visibility = 'hidden';
-  clone.style.top = this.top + 'px';
-  clone.style.left = this.left + 'px';
+  addClone(clone, this.top, this.left);
   clone.className = this.element.className;
 
-  console.log(collisionCheck(clone));
   if(!collisionCheck(clone)){
     this.element.remove();
     this.element = clone;
@@ -268,6 +250,7 @@ Piece.prototype.rotate = function () {
     clone.remove();
     this.curState = prevState;
   }
+
 
 }
 
@@ -287,6 +270,7 @@ Piece.prototype.reachedTop = function () {
   }
   return false;
 }
+
 
 function OPiece () {
 

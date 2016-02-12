@@ -97,11 +97,12 @@
     width: 25px; }
 
 #gameboard {
-  border: 2px solid black;
+  border: 1px solid black;
   width: 250px;
   height: 500px;
   margin: auto;
-  position: relative; }
+  position: relative;
+  background-color: black; }
 
 #startbutton {
   position: absolute;

@@ -10,14 +10,17 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
   width: $pieceSize;
   left: $startPositionLeft;
   top: -$pieceSize;
+
   .colored{
     background-color: $color;
   }
+
   div {
     float: left;
     height: $pieceSize/4;
     width: $pieceSize/4;
   }
+  
 }
 
 .o-piece {
@@ -49,11 +52,12 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
 }
 
 #gameboard {
-  border: 2px solid black;
+  border: 1px solid black;
   width: $gameboardWidth;
   height: $gameboardHeight;
   margin: auto;
   position: relative;
+  background-color: black;
 }
 
 #startbutton {
