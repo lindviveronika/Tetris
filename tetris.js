@@ -1,8 +1,11 @@
 var descendSpeed = 400;
+
 var pieceSize = 100;
 var innerPieceSize = pieceSize/4;
+
+var nrInnerPiecesRow = 10;
 var gameBoardHeight = pieceSize * 5;
-var gameBoardWidth = pieceSize * 2.5;
+var gameBoardWidth = innerPieceSize * nrInnerPiecesRow;
 
 window.onload = function () {
 
@@ -53,7 +56,7 @@ function absolutePosition (element) {
         top += element.offsetTop  || 0;
         left += element.offsetLeft || 0;
         element = element.offsetParent;
-    } while(element);
+    } while(element && element.getAttribute('id') != 'gameboard');
 
     return {
         top: top,
@@ -78,20 +81,20 @@ function collisionCheck (element) {
 
   for(i = 0; i < childnodes.length; i++){
 
-    if(childnodes[i].className === 'colored'){
+    if(childnodes[i].className.indexOf('colored') > -1){
 
       //Outside bottom
-      if(absolutePosition(childnodes[i]).top > absolutePosition(gameboard).top + gameBoardHeight - innerPieceSize){
+      if(absolutePosition(childnodes[i]).top > gameBoardHeight - innerPieceSize){
         return 'bottom';
       }
 
       //Outside right side
-      if(absolutePosition(childnodes[i]).left > absolutePosition(gameboard).left + gameBoardWidth - innerPieceSize){
+      if(absolutePosition(childnodes[i]).left > gameBoardWidth - innerPieceSize){
         return 'right';
       }
 
       //Outside left side
-      if(absolutePosition(childnodes[i]).left < absolutePosition(gameboard).left){
+      if(absolutePosition(childnodes[i]).left < 0){
         return 'left';
       }
 
@@ -109,6 +112,44 @@ function collisionCheck (element) {
     }
   }
   return false;
+}
+
+function checkRows (newPiece) {
+
+  var childnodes = newPiece.element.childNodes;
+  var fixedPieces = document.getElementsByClassName('colored fixed');
+  var piecesInRow;
+  var top;
+
+  for(i = 0; i < childnodes.length; i++){
+    if(childnodes[i].className.indexOf('colored') > -1){
+      piecesInRow = [];
+      top = absolutePosition(childnodes[i]).top;
+      for(j = 0; j < fixedPieces.length; j++){
+
+        if(absolutePosition(fixedPieces[j]).top === top){
+          piecesInRow.push(fixedPieces[j]);
+
+          if(piecesInRow.length === nrInnerPiecesRow){
+            console.log(piecesInRow);
+            for(k = 0; k < piecesInRow.length; k++){
+
+              piecesInRow[k].remove();
+              var remainingPieces = document.getElementsByClassName('colored fixed');
+              for(l = 0; l < remainingPieces.length; l++){
+                if(absolutePosition(remainingPieces[l]).top < top){
+                  remainingPieces[l].style.top = parseInt(remainingPieces[l].style.top) + innerPieceSize + 'px';
+                }
+              }
+
+            }
+          }
+
+        }
+      }
+    }
+  }
+
 }
 
 function getRandomPiece () {
@@ -136,12 +177,13 @@ function getRandomPiece () {
   }
 }
 
-function Piece (className) {
+function Piece (color) {
+  this.color = color;
   this.top = -pieceSize;
   this.left = gameBoardWidth/2 - pieceSize/2;
   this.curState = 1;
   this.element = this.draw();
-  this.element.className = className;
+  this.element.className = 'piece';
 }
 
 Piece.prototype.draw = function () {
@@ -159,7 +201,7 @@ Piece.prototype.draw = function () {
       pieceContainer.appendChild(innerPiece);
 
       if(state[i][j] === 1){
-        innerPiece.className = 'colored'
+        innerPiece.className = 'colored' + ' ' + this.color;
       }
     }
   }
@@ -184,8 +226,18 @@ Piece.prototype.descend = function () {
 
         var childnodes = piece.element.childNodes;
         for(var i = 0; i < childnodes.length; i++){
-          childnodes[i].className += ' fixed';
+          if(childnodes[i].className.indexOf('colored') > -1){
+            var replacingpiece = childnodes[i].cloneNode();
+            replacingpiece.className = childnodes[i].className + ' fixed';
+            replacingpiece.style.width = innerPieceSize + 'px';
+            replacingpiece.style.height = innerPieceSize + 'px';
+            replacingpiece.style.position = 'absolute';
+            replacingpiece.style.top = absolutePosition(childnodes[i]).top + 'px';
+            replacingpiece.style.left = absolutePosition(childnodes[i]).left + 'px';
+            document.getElementById('gameboard').appendChild(replacingpiece);
+          }
         }
+        checkRows(piece);
 
         if (piece.reachedTop()) {
           gameOver();
@@ -193,10 +245,11 @@ Piece.prototype.descend = function () {
         else {
           dropNewPiece();
         }
-
+        piece.element.remove();
+        clone.remove();
         return;
     }
-
+    clone.remove();
     piece.top += innerPieceSize;
     piece.element.style.top = piece .top + 'px';
 
@@ -215,6 +268,7 @@ Piece.prototype.moveLeft = function () {
       this.element.style.left = this.left + 'px';
 
   }
+  clone.remove();
 }
 
 Piece.prototype.moveRight = function () {
@@ -228,6 +282,7 @@ Piece.prototype.moveRight = function () {
       this.element.style.left = this.left + 'px';
 
   }
+  clone.remove();
 }
 
 Piece.prototype.moveDown = function () {
@@ -239,8 +294,9 @@ Piece.prototype.moveDown = function () {
 
     this.top = this.top + innerPieceSize;
     this.element.style.top = this.top + 'px';
-    
+
   }
+  clone.remove();
 }
 
 Piece.prototype.rotate = function () {
@@ -266,7 +322,6 @@ Piece.prototype.rotate = function () {
     clone.remove();
     this.curState = prevState;
   }
-
 
 }
 
@@ -298,7 +353,7 @@ function OPiece () {
 
   this.states  = [this.state1];
 
-  Piece.call(this, 'o-piece');
+  Piece.call(this, 'red');
 
 }
 
@@ -316,7 +371,7 @@ function IPiece () {
 
   this.states  = [this.state1, this.state2];
 
-  Piece.call(this, 'i-piece');
+  Piece.call(this, 'blue');
 
 }
 
@@ -334,7 +389,7 @@ function SPiece () {
 
   this.states  = [this.state1, this.state2];
 
-  Piece.call(this, 's-piece');
+  Piece.call(this, 'yellow');
 
 }
 
@@ -352,7 +407,7 @@ function ZPiece () {
 
   this.states  = [this.state1, this.state2];
 
-  Piece.call(this, 'z-piece');
+  Piece.call(this, 'green');
 
 }
 
@@ -380,7 +435,7 @@ function LPiece () {
 
   this.states  = [this.state1, this.state2, this.state3, this.state4];
 
-  Piece.call(this, 'l-piece');
+  Piece.call(this, 'cyan');
 
 }
 
@@ -408,7 +463,7 @@ function JPiece () {
 
   this.states  = [this.state1, this.state2, this.state3, this.state4];
 
-  Piece.call(this, 'j-piece');
+  Piece.call(this, 'purple');
 
 }
 
@@ -436,7 +491,7 @@ function TPiece () {
 
   this.states  = [this.state1, this.state2, this.state3, this.state4];
 
-  Piece.call(this, 't-piece');
+  Piece.call(this, 'orange');
 
 }
 

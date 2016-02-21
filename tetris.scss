@@ -3,7 +3,7 @@ $gameboardHeight: $pieceSize * 5;
 $gameboardWidth: $pieceSize * 2.5;
 $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
 
-@mixin piece($color) {
+.piece {
   position: absolute;
   overflow: hidden;
   height: $pieceSize;
@@ -11,44 +11,45 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
   left: $startPositionLeft;
   top: -$pieceSize;
 
-  .colored{
-    background-color: $color;
-  }
-
   div {
     float: left;
     height: $pieceSize/4;
     width: $pieceSize/4;
   }
-  
 }
 
-.o-piece {
-  @include piece(yellow);
+@mixin innerPiece($x, $y) {
+  background-image: url('tetris2.png');
+  background-repeat: no-repeat;
+  background-position: $x $y;
 }
 
-.i-piece {
-  @include piece(cyan);
+.red {
+  @include innerPiece(0px,0px);
 }
 
-.s-piece {
-  @include piece(lime);
+.yellow {
+  @include innerPiece(0px,-25px);
 }
 
-.z-piece {
-  @include piece(red);
+.orange{
+  @include innerPiece(0px,-50px);
 }
 
-.l-piece {
-  @include piece(orange);
+.purple {
+  @include innerPiece(0px,-75px);
 }
 
-.j-piece {
-  @include piece(blue);
+.blue {
+  @include innerPiece(0px,-100px);
 }
 
-.t-piece {
-  @include piece(purple);
+.green {
+  @include innerPiece(0px,-125px);
+}
+
+.cyan {
+  @include innerPiece(0px,-150px);
 }
 
 #gameboard {
@@ -65,4 +66,8 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
   top: 0;
   left: 0;
   padding: 30px;
+}
+
+body {
+  overflow: hidden;
 }
