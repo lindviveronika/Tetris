@@ -1,3 +1,4 @@
+var score = 0;
 var descendSpeed = 400;
 
 var pieceSize = 100;
@@ -42,7 +43,7 @@ function dropNewPiece () {
 
 function gameOver () {
 
-  var restart = confirm('Game over! Do you want to play again?');
+  var restart = confirm('Game over! Your score: ' + score + '. Do you want to play again?');
 
   if (restart) {
     location.reload();
@@ -114,6 +115,17 @@ function collisionCheck (element) {
   return false;
 }
 
+function replacePiece (oldPiece) {
+  var replacingpiece = oldPiece.cloneNode();
+  replacingpiece.className = oldPiece.className + ' fixed';
+  replacingpiece.style.width = innerPieceSize + 'px';
+  replacingpiece.style.height = innerPieceSize + 'px';
+  replacingpiece.style.position = 'absolute';
+  replacingpiece.style.top = absolutePosition(oldPiece).top + 'px';
+  replacingpiece.style.left = absolutePosition(oldPiece).left + 'px';
+  document.getElementById('gameboard').appendChild(replacingpiece);
+}
+
 function movePiecesAbove (top) {
   var remainingPieces = document.getElementsByClassName('colored fixed');
   for(l = 0; l < remainingPieces.length; l++){
@@ -123,19 +135,25 @@ function movePiecesAbove (top) {
   }
 }
 
+function speedUp () {
+  if(descendSpeed > 50) {
+    descendSpeed = descendSpeed - 10;
+  }
+}
+
 function checkRows (newPiece) {
 
   var childnodes = newPiece.element.childNodes;
   var fixedPieces = document.getElementsByClassName('colored fixed');
-  console.log(fixedPieces.length + ' fixed pieces');
   var piecesInRow;
   var top;
 
   for(i = 0; i < childnodes.length; i++){
+
     if(childnodes[i].className.indexOf('colored') > -1){
-      console.log(childnodes[i]);
       piecesInRow = [];
       top = absolutePosition(childnodes[i]).top;
+
       for(j = 0; j < fixedPieces.length; j++){
 
         if(absolutePosition(fixedPieces[j]).top === top){
@@ -147,6 +165,8 @@ function checkRows (newPiece) {
               piecesInRow[k].remove();
             }
             movePiecesAbove(top);
+            speedUp();
+            score ++;
           }
         }
       }
@@ -230,14 +250,7 @@ Piece.prototype.descend = function () {
         var childnodes = piece.element.childNodes;
         for(var i = 0; i < childnodes.length; i++){
           if(childnodes[i].className.indexOf('colored') > -1){
-            var replacingpiece = childnodes[i].cloneNode();
-            replacingpiece.className = childnodes[i].className + ' fixed';
-            replacingpiece.style.width = innerPieceSize + 'px';
-            replacingpiece.style.height = innerPieceSize + 'px';
-            replacingpiece.style.position = 'absolute';
-            replacingpiece.style.top = absolutePosition(childnodes[i]).top + 'px';
-            replacingpiece.style.left = absolutePosition(childnodes[i]).left + 'px';
-            document.getElementById('gameboard').appendChild(replacingpiece);
+            replacePiece(childnodes[i]);
           }
         }
         checkRows(piece);
@@ -248,6 +261,7 @@ Piece.prototype.descend = function () {
         else {
           dropNewPiece();
         }
+
         piece.element.remove();
         clone.remove();
         return;
@@ -331,13 +345,10 @@ Piece.prototype.rotate = function () {
 Piece.prototype.reachedTop = function () {
 
   var childnodes = this.element.childNodes;
-  var gameboard = document.getElementById('gameboard');
 
   for(i = 0; i < childnodes.length; i++){
-
-    if(childnodes[i].className === 'colored'){
-
-      if(absolutePosition(childnodes[i]).top === absolutePosition(gameboard).top){
+    if(childnodes[i].className.indexOf('colored') > -1){
+      if(absolutePosition(childnodes[i]).top <= 0){
         return true;
       }
     }
