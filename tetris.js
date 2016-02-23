@@ -114,15 +114,26 @@ function collisionCheck (element) {
   return false;
 }
 
+function movePiecesAbove (top) {
+  var remainingPieces = document.getElementsByClassName('colored fixed');
+  for(l = 0; l < remainingPieces.length; l++){
+    if(absolutePosition(remainingPieces[l]).top < top){
+      remainingPieces[l].style.top = parseInt(remainingPieces[l].style.top) + innerPieceSize + 'px';
+    }
+  }
+}
+
 function checkRows (newPiece) {
 
   var childnodes = newPiece.element.childNodes;
   var fixedPieces = document.getElementsByClassName('colored fixed');
+  console.log(fixedPieces.length + ' fixed pieces');
   var piecesInRow;
   var top;
 
   for(i = 0; i < childnodes.length; i++){
     if(childnodes[i].className.indexOf('colored') > -1){
+      console.log(childnodes[i]);
       piecesInRow = [];
       top = absolutePosition(childnodes[i]).top;
       for(j = 0; j < fixedPieces.length; j++){
@@ -131,20 +142,12 @@ function checkRows (newPiece) {
           piecesInRow.push(fixedPieces[j]);
 
           if(piecesInRow.length === nrInnerPiecesRow){
-            console.log(piecesInRow);
             for(k = 0; k < piecesInRow.length; k++){
 
               piecesInRow[k].remove();
-              var remainingPieces = document.getElementsByClassName('colored fixed');
-              for(l = 0; l < remainingPieces.length; l++){
-                if(absolutePosition(remainingPieces[l]).top < top){
-                  remainingPieces[l].style.top = parseInt(remainingPieces[l].style.top) + innerPieceSize + 'px';
-                }
-              }
-
             }
+            movePiecesAbove(top);
           }
-
         }
       }
     }
