@@ -116,29 +116,39 @@ function collisionCheck (element) {
 }
 
 function replacePiece (oldPiece) {
+
   var replacingpiece = oldPiece.cloneNode();
+
   replacingpiece.className = oldPiece.className + ' fixed';
   replacingpiece.style.width = innerPieceSize + 'px';
   replacingpiece.style.height = innerPieceSize + 'px';
   replacingpiece.style.position = 'absolute';
   replacingpiece.style.top = absolutePosition(oldPiece).top + 'px';
   replacingpiece.style.left = absolutePosition(oldPiece).left + 'px';
+
   document.getElementById('gameboard').appendChild(replacingpiece);
+
 }
 
 function movePiecesAbove (top) {
+
   var remainingPieces = document.getElementsByClassName('colored fixed');
+
   for(l = 0; l < remainingPieces.length; l++){
+
     if(absolutePosition(remainingPieces[l]).top < top){
       remainingPieces[l].style.top = parseInt(remainingPieces[l].style.top) + innerPieceSize + 'px';
     }
+
   }
 }
 
 function speedUp () {
+
   if(descendSpeed > 50) {
     descendSpeed = descendSpeed - 10;
   }
+
 }
 
 function checkRows (newPiece) {
@@ -166,7 +176,8 @@ function checkRows (newPiece) {
             }
             movePiecesAbove(top);
             speedUp();
-            score ++;
+            score++;
+            document.getElementById('score').innerHTML = score;
           }
         }
       }
@@ -202,7 +213,7 @@ function getRandomPiece () {
 
 function Piece (color) {
   this.color = color;
-  this.top = -pieceSize;
+  this.top = -pieceSize/2;
   this.left = gameBoardWidth/2 - pieceSize/2;
   this.curState = 1;
   this.element = this.draw();

@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <head>
     <title>Tetris</title>
+    <link href='https://fonts.googleapis.com/css?family=Sarpanch:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="tetris.css"/>
     <script type="text/javascript" src="tetris.js"></script>
 </head>
 <body>
+  <div id='mask'></div>
+  <div id='wrapper'>
     <div id='gameboard' ></div>
-    <button id='startbutton'>Start</button>
+    <div id='sidesection' >
+      <div id='scoreContainer'> Score <span id='score'>0</span></div>
+      <button id='startbutton'>Start game</button>
+    </div>
+  </div>
 </body>

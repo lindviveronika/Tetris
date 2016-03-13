@@ -3,25 +3,41 @@ $gameboardHeight: $pieceSize * 5;
 $gameboardWidth: $pieceSize * 2.5;
 $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
 
+$backgroundColor: #FAF164;
+$gameBoardPositionTop: 50px;
+
+
+@mixin innerPiece($x, $y) {
+  background-image: url('tetris2.png');
+  background-repeat: no-repeat;
+  background-position: $x $y;
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+@mixin gradient($color) {
+  background: linear-gradient( lighten($color, 40), lighten($color, 20) 20%, $color 70%);
+}
+
+
 .piece {
   position: absolute;
   overflow: hidden;
   height: $pieceSize;
   width: $pieceSize;
   left: $startPositionLeft;
-  top: -$pieceSize;
+  top: -$pieceSize/2;
 
   div {
     float: left;
     height: $pieceSize/4;
     width: $pieceSize/4;
   }
-}
-
-@mixin innerPiece($x, $y) {
-  background-image: url('tetris2.png');
-  background-repeat: no-repeat;
-  background-position: $x $y;
 }
 
 .red {
@@ -52,6 +68,27 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
   @include innerPiece(0px,-150px);
 }
 
+.sidesectionbox {
+  width: 100%;
+  position: absolute;
+  left: 0px;
+  font-family: 'Sarpanch', sans-serif;
+  font-size: 1.5em;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  border: 1px solid black;
+  box-shadow: none !important;
+  @include border-radius(5px);
+}
+
+
+#wrapper {
+  margin: auto;
+  margin-top: $gameBoardPositionTop;
+  width: 520px;
+}
+
 #gameboard {
   border: 1px solid black;
   width: $gameboardWidth;
@@ -59,15 +96,62 @@ $startPositionLeft: $gameboardWidth/2 - $pieceSize/2;
   margin: auto;
   position: relative;
   background-color: black;
+  float: left;
+  @include border-radius(5px);
 }
 
-#startbutton {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 30px;
+#sidesection {
+  float: left;
+  margin-left: 22px;
+  padding-left: 10px;
+  width: 200px;
+  height: $gameboardHeight;
+  position: relative;
 }
+
+
+#startbutton {
+  @extend .sidesectionbox;
+  height: 50px;
+  top: 0px;
+  cursor: pointer;
+  @include gradient(#01F000);
+
+    &:hover:enabled {
+      font-size: 1.6em;
+    }
+
+    &:disabled {
+      @include gradient(darkgrey);
+      cursor: default;
+    }
+
+}
+
+#scoreContainer {
+  @extend .sidesectionbox;
+  box-sizing: border-box;
+  padding: 0;
+  margin-top: 5px;
+  line-height: 50px;
+  top: 50px;
+  @include gradient(#00F0EF);
+}
+
+#mask {
+  background-color: $backgroundColor;
+  z-index: 100;
+  height: $gameBoardPositionTop;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+}
+
 
 body {
   overflow: hidden;
+  background: $backgroundColor;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  height: 100%;
 }
