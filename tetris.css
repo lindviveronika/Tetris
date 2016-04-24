@@ -107,7 +107,7 @@
   background: linear-gradient(#bdffff, #57fffe 20%, #00F0EF 70%); }
 
 #mask {
-  background-color: #FAF164;
+  background-color: white;
   z-index: 100;
   height: 50px;
   width: 100%;
@@ -116,7 +116,7 @@
 
 body {
   overflow: hidden;
-  background: #FAF164;
+  background: white;
   background-repeat: no-repeat;
   background-attachment: fixed;
   height: 100%; }
